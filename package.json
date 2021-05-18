@@ -2,18 +2,20 @@
   "name": "wetube",
   "version": "1.0.0",
   "description": "The best way to watch vidoes.",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "win": "node index.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/deepredk/wetube-reloaded.git"
   },
-  "author": "",
+  "author": "deepredk",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/deepredk/wetube-reloaded/issues"
   },
-  "homepage": "https://github.com/deepredk/wetube-reloaded#readme"
+  "homepage": "https://github.com/deepredk/wetube-reloaded#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
