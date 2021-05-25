@@ -13,6 +13,7 @@ const handleHome = (req, res) => {
   return res.send("<h1>I still love you.</h1>");
 }
 
+app.use(gossipMiddleware);
 app.get("/", gossipMiddleware, handleHome);
 
 const handleListening = () =>
