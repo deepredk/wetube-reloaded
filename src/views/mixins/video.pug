@@ -1,7 +1,10 @@
-mixin video(info)
+mixin video(videoInfo)
   div
     h4
-      a(href=`/videos/${info.id}`)=info.title
-    p=info.description
-    small=info.createdAt 
+      a(href=`/videos/${videoInfo.id}`)=videoInfo.title
+    p=videoInfo.description
+    ul 
+      each hashtag in videoInfo.hashtags
+        li=hashtag
+    small=videoInfo.createdAt 
     hr 
