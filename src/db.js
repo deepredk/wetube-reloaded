@@ -4,6 +4,8 @@ import Video from "./models/Video";
 mongoose.connect("mongodb://127.0.0.1:27017/wetube", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  useFindAndModify: false,
+  useCreateIndex: true,
 });
 
 const db = mongoose.connection;
