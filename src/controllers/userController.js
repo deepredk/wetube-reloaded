@@ -1,23 +1,25 @@
 import User from "../models/User";
-import bcrypt from "bcrypt";
+import fetch from 'node-fetch';
+import bcrypt from 'bcrypt';
+import { access } from 'fs';
 
-export const getJoin = (req, res) => res.render("join", { pageTitle: "Join" });
+export const getJoin = (req, res) => res.render('join', { pageTitle: 'Join' });
 export const postJoin = async (req, res) => {
   const { name, username, email, password, password2, location } = req.body;
-  const pageTitle = "Join";
+  const pageTitle = 'Join';
 
   if (password !== password2) {
-    return res.status(400).render("join", {
+    return res.status(400).render('join', {
       pageTitle,
-      errorMessage: "Password confirmation does not match.",
+      errorMessage: 'Password confirmation does not match.',
     });
   }
 
   const exists = await User.exists({ $or: [{ username }, { email }] });
   if (exists) {
-    return res.status(400).render("join", {
+    return res.status(400).render('join', {
       pageTitle,
-      errorMessage: "This username/email is already taken.",
+      errorMessage: 'This username/email is already taken.',
     });
   }
 
@@ -29,39 +31,39 @@ export const postJoin = async (req, res) => {
       password,
       location,
     });
-    return res.redirect("/login");
+    return res.redirect('/login');
   } catch (error) {
-    return res.status(400).render("join", {
-      pageTitle: "Upload Video",
+    return res.status(400).render('join', {
+      pageTitle: 'Upload Video',
       errorMessage: error._message,
     });
   }
 };
 
 export const getLogin = (req, res) =>
-  res.render("login", { pageTitle: "Login" });
+  res.render('login', { pageTitle: 'Login' });
 
 export const postLogin = async (req, res) => {
   const { username, password } = req.body;
-  const pageTitle = "Login";
+  const pageTitle = 'Login';
   const user = await User.findOne({ username });
   if (!user) {
-    return res.status(400).render("login", {
+    return res.status(400).render('login', {
       pageTitle,
-      errorMessage: "An acccount with this username does not exist.",
+      errorMessage: 'An acccount with this username does not exist.',
     });
   }
-  
+
   const ok = await bcrypt.compare(password, user.password);
   if (!ok) {
-    return res.status(400).render("login", {
+    return res.status(400).render('login', {
       pageTitle,
-      errorMessage: "Wrong password",
+      errorMessage: 'Wrong password',
     });
   }
   req.session.loggedIn = true;
   req.session.user = user;
-  res.redirect("/");
+  res.redirect('/');
 };
 
 export const startGithubLogin = (req, res) => {
@@ -85,13 +87,23 @@ export const finishGithubLogin = async (req, res) => {
   };
   const params = new URLSearchParams(config).toString();
   const finalUrl = `${baseUrl}?${params}`;
-  const data = await fetch(finalUrl, {
+  const tokenRequest = await fetch(finalUrl, {
     method: 'POST',
     headers: {
       Accept: 'application/json',
     },
-  });
-  const json = await data.json();
+  }).json();
+
+  if ('access_token' in tokenRequest) {
+    const { access_token } = tokenRequest;
+    const userRequest = await fetch('https://api.github.com/user', {
+      headers: {
+        Authorization: `token ${access_token}`,
+      },
+    }).json();
+  } else {
+    return res.redirect('/login');
+  }
 };
 
 export const edit = (req, res) => res.send("Edit User");
